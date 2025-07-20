@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Сейчас слушаю</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 400px;
+      margin: 40px auto;
+      padding: 20px;
+      text-align: center;
+      background: #f0f0f0;
+      border-radius: 10px;
+    }
+    img {
+      max-width: 100%;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+    a {
+      text-decoration: none;
+      color: #1a0dab;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Сейчас слушаю</h1>
+  <div id="track-info">Загрузка...</div>
+
+  <script>
+    const username = 'Mylium'; // вставь сюда свой ник Last.fm
+    const apiKey = '46bf9095c1c90ee99501c40c9ff8a8b0'; // вставь сюда API ключ Last.fm
+
+    async function fetchNowPlaying() {
+      const url = `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${username}&api_key=${apiKey}&format=json&limit=1`;
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if (!data.recenttracks || !data.recenttracks.track || data.recenttracks.track.length === 0) {
+          document.getElementById('track-info').textContent = 'Нет данных о прослушиваниях.';
+          return;
+        }
+
+        const track = data.recenttracks.track[0];
+        const isNowPlaying = track['@attr'] && track['@attr'].nowplaying === 'true';
+        const trackName = track.name;
+        const artist = track.artist['#text'];
+        const album = track.album['#text'];
+        const urlTrack = track.url;
+        const image = track.image && track.image.length ? track.image[track.image.length - 1]['#text'] : '';
+
+        const html = `
+          ${image ? `<img src="${image}" alt="Обложка альбома" />` : ''}
+          <p><a href="${urlTrack}" target="_blank" rel="noopener noreferrer">${artist} — ${trackName}</a></p>
+          <p>${album}</p>
+          <p><em>${isNowPlaying ? '' : 'Последний трек'}</em></p>
+        `;
+
+        document.getElementById('track-info').innerHTML = html;
+      } catch (e) {
+        document.getElementById('track-info').textContent = 'Ошибка загрузки данных.';
+        console.error(e);
+      }
+    }
+
+    fetchNowPlaying();
+    setInterval(fetchNowPlaying, 60000); // обновлять раз в минуту
+  </script>
+</body>
+</html>
