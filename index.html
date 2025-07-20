@@ -57,7 +57,7 @@
           ${image ? `<img src="${image}" alt="Обложка альбома" />` : ''}
           <p><a href="${urlTrack}" target="_blank" rel="noopener noreferrer">${artist} — ${trackName}</a></p>
           <p>${album}</p>
-          <p><em>${isNowPlaying ? '' : 'Последний трек'}</em></p>
+          <p><em>${isNowPlaying ? 'Сейчас играет' : 'Последний трек'}</em></p>
         `;
 
         document.getElementById('track-info').innerHTML = html;
